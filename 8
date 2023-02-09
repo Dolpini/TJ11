@@ -1,0 +1,115 @@
+//Nimien korjaaminen
+Option Explicit
+'OLETUS: tiedot A-sarakkeesta alkaen
+Const lahde = "Nimet" 'lähdearkki
+Const kohde = "Nimet_korjattu" 'kohdearkki
+Const vyk_r = 2
+Const s_lkm = 5 'tietojen lkm rivillä
+
+Dim kohde_r, kohde_s, r, s As Integer ' r ja s lähde-arkilla
+Sub ehosta()
+'Pääohjelma
+
+Sheets(lahde).Activate
+kohde_r = vyk_r 'kohdearkki
+r = vyk_r 'lähdearkki
+
+Do While Cells(r, 1).Value <> ""
+    s = 1
+    kohde_s = 1
+    
+    If lisarivi() Then
+        siirra_edelliselle 'lisätietosarakkeeseen edelliselle riville
+    ElseIf pilkutettu() Then
+        pura 'nimi kahteen sarakkeeseen jne.
+    ElseIf sukuetuvirhe() Then
+        erota_suku_etu  'suku- ja etunimi erikseen
+    Else
+        siirra_vaan 'sellaisenaan, ei temppuja
+    End If
+    
+    'seuraavat rivit
+    r = r + 1
+    kohde_r = kohde_r + 1
+Loop
+Sheets(kohde).Activate
+End Sub
+Function lisarivi() As Boolean
+'lisätietorivi, jossa aiempi sukunimi
+lisarivi = False 'oletusarvo
+If Cells(r, 2).Value = "" Then 'vain 1. sarakkeessa tietoja
+    lisarivi = True
+End If
+End Function
+Function siirra_edelliselle() As Boolean
+
+Dim apu As String
+
+apu = Replace(Sheets(lahde).Cells(r, 1).Value, "o.s. ", "")
+
+kohde_r = kohde_r - 1
+
+Sheets(kohde).Cells(kohde_r, 6) = apu
+
+End Function
+Function pilkutettu() As Boolean
+
+pilkutettu = False
+If InStr(1, Cells(r, 1).Value, ",") > 0 Then
+    pilkutettu = True
+End If
+End Function
+Function pura() As Boolean
+
+Dim apu As Variant
+
+apu = Split(Sheets(lahde).Cells(r, 1).Value, ", ", 2)
+Sheets(kohde).Cells(kohde_r, 1) = apu(0)
+Sheets(kohde).Cells(kohde_r, 2) = apu(1)
+
+Dim apu_aapeli As String
+Dim sarake As Double
+
+For sarake = 2 To s_lkm
+apu_aapeli = Sheets(lahde).Cells(r, sarake).Value
+Sheets(kohde).Cells(kohde_r, sarake + 1).Value = apu_aapeli
+Next sarake
+
+End Function
+Function sukuetuvirhe() As Boolean
+
+sukuetuvirhe = False
+If InStr(1, Cells(r, 1).Value, " ") > 0 Then
+    If Cells(r, s_lkm).Value = "" Then
+        sukuetuvirhe = True
+    End If
+End If
+
+End Function
+Function erota_suku_etu() As Boolean
+
+Dim apu As Variant
+
+apu = Split(Sheets(lahde).Cells(r, 1).Value, " ", 2)
+Sheets(kohde).Cells(kohde_r, 1) = apu(0)
+Sheets(kohde).Cells(kohde_r, 2) = apu(1)
+
+Dim apu_aapeli As String
+Dim sarake As Double
+
+For sarake = 2 To s_lkm
+apu_aapeli = Sheets(lahde).Cells(r, sarake).Value
+Sheets(kohde).Cells(kohde_r, sarake + 1).Value = apu_aapeli
+Next sarake
+
+End Function
+Function siirra_vaan() As Boolean
+
+Dim apu As String
+
+For s = 1 To s_lkm
+apu = Sheets(lahde).Cells(r, s).Value
+Sheets(kohde).Cells(kohde_r, s).Value = apu
+Next s
+
+End Function
