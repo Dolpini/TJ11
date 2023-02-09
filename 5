@@ -141,3 +141,18 @@ Range(vyk_tuotteet).Cells(kk, tuote).Value = yht
 
 
 End Sub
+
+//Vaihda kuvaajan tyyppiä
+Sub kuvaaja()
+    
+   
+ActiveSheet.ChartObjects("Maittain").Activate
+
+If ActiveChart.ChartType = xlLineMarkers Then
+    ActiveChart.ChartType = xlColumnStacked
+Else
+    ActiveChart.ChartType = xlLineMarkers
+End If
+Range("vyk_maat").Select
+
+End Sub
