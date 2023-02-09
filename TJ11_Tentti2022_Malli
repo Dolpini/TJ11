@@ -1,0 +1,123 @@
+//Iisi makro
+Sub iisi()
+
+Const harmaa = "harmaa"
+Const yht = "yht"
+Const keskiarvo = "keskiarvo"
+
+Dim tulos As Integer
+Dim r, s As Integer
+Dim ka As Double
+
+tulos = 0
+
+For s = 1 To Range(harmaa).Columns.Count
+    For r = 1 To Range(harmaa).Rows.Count
+        tulos = tulos + Range(harmaa).Cells(r, s).Value
+    Next
+Next
+Range(yht).Cells(1, 1).Value = tulos
+solut = Range(harmaa).Rows.Count * Range(harmaa).Columns.Count
+Range(keskiarvo).Cells(1, 1).Value = tulos / solut
+End Sub
+
+//Vaikeampi makro
+Sub keraa()
+
+Const tuloslaskelma = "tuloslaskelma"
+Const kooste = "kooste"
+Const data_r = 2
+Const kaupunkeja = 4
+Const kvartaalit = 4
+
+Dim kansio, tiedosto, alku, jatke, kaupunki, polkunimi, tama As String
+Dim kaupunkinro, liikevaihto, toimintakulut As Integer
+
+kansio = Cells(1, 3).Value
+alku = "tp_"
+jatke = ".xlsx"
+tama = ActiveWorkbook.Name
+
+For kaupunkinro = 1 To kaupunkeja
+    kaupunki = Range(tuloslaskelma).Cells(1, kaupunkinro)
+    tiedosto = alku + kaupunki + jatke
+    polkunimi = kansio + tiedosto
+    If Dir(polkunimi) = "" Then
+            MsgBox ("Tarkasta datatiedot.")
+    End If
+Next
+
+For kaupunkinro = 1 To kaupunkeja
+    kaupunki = Range(tuloslaskelma).Cells(1, kaupunkinro)
+    tiedosto = alku + kaupunki + jatke
+    polkunimi = kansio + tiedosto
+    Workbooks.Open (polkunimi)
+    
+    liikevaihto = 0
+    toimintakulut = 0
+    
+    For kvartaali = 1 To kvartaalit
+        liikevaihto = liikevaihto + Cells(data_r, kvartaali + 1).Value
+        toimintakulut = toimintakulut + Cells(data_r + 1, kvartaali + 1).Value
+    Next
+    
+    Workbooks(tiedosto).Close
+    
+    Workbooks(tama).Activate
+    Range(tuloslaskelma).Cells(2, kaupunkinro).Value = liikevaihto
+    Range(tuloslaskelma).Cells(3, kaupunkinro).Value = toimintakulut
+    Range(tuloslaskelma).Cells(4, kaupunkinro).Value = liikevaihto - toimintakulut
+    Range(tuloslaskelma).Cells(5, kaupunkinro).Value = (liikevaihto - toimintakulut) / liikevaihto
+Next
+
+End Sub
+
+//Vaikein makro
+Option Explicit
+Const myynnit = "myynnit"
+Const raportit = "raportit"
+Const tilasto = "tilasto"
+Const myyja_s = 9
+Const tuotto_s = 13
+
+Dim myyjannimi As String
+Dim r As Integer 'koordinaatti raportit-arkilla
+Sub laske()
+
+For r = 1 To Range(tilasto).Rows.Count
+    myyjannimi = Range(tilasto).Cells(r, 1).Value
+    laske_yksi_myyja
+Next
+End Sub
+
+Sub laske_yksi_myyja()
+
+Dim r2 As Integer
+Dim kaupat As Integer
+Dim tulos As Long
+
+Sheets(myynnit).Activate
+kaupat = 0
+tulos = 0
+r2 = 1
+
+Do While Cells(r2, myyja_s) <> ""
+    If Cells(r2, myyja_s) = myyjannimi Then
+        kaupat = kaupat + 1
+    End If
+    r2 = r2 + 1
+Loop
+Range(tilasto).Cells(r, 2).Value = kaupat
+
+r2 = 1
+Do While Cells(r2, myyja_s) <> ""
+    If Cells(r2, myyja_s) = myyjannimi Then
+        tulos = tulos + Cells(r2, tuotto_s).Value
+    End If
+    r2 = r2 + 1
+Loop
+Range(tilasto).Cells(r, 3).Value = tulos
+Sheets(raportit).Activate
+End Sub
+
+
