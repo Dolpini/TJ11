@@ -1,0 +1,206 @@
+//Laske
+Sub laske()
+'Tämä sub on valmis, ei saa muuttaa!
+Const tulosalue = "tulosalue"
+Const alue = "oranssi"
+
+Application.Calculation = xlCalculationManual
+Range(tulosalue).Cells(1, 1).Value = yht(alue)
+Range(tulosalue).Cells(2, 1).Value = ka(alue)
+Range(tulosalue).Cells(3, 1).Value = pienin(alue)
+Range(tulosalue).Cells(4, 1).Value = suurin(alue)
+Application.Calculation = xlCalculationAutomatic
+End Sub
+Function yht(ByVal x As String) As Double
+Dim r, s As Integer
+
+r = 1
+s = 1
+
+yht = 0
+For s = 1 To Range(x).Columns.Count
+    For r = 1 To Range(x).Rows.Count
+        yht = yht + Range(x).Cells(r, s).Value
+    Next r
+Next s
+
+End Function
+Function ka(ByVal x As String) As Double
+Dim summa As Double
+Dim r, s As Integer
+
+r = 1
+s = 1
+
+summa = 0
+For s = 1 To Range(x).Columns.Count
+    For r = 1 To Range(x).Rows.Count
+        summa = summa + Range(x).Cells(r, s).Value
+    Next r
+Next s
+
+ka = summa / (Range(x).Columns.Count * Range(x).Rows.Count)
+End Function
+Function pienin(ByVal x As String) As Double
+
+
+Dim r, s As Integer
+
+r = 1
+s = 1
+pienin = Range(x).Cells(r, s).Value
+
+For s = 1 To Range(x).Columns.Count
+    For r = 1 To Range(x).Rows.Count
+        If pienin > Range(x).Cells(r, s).Value Then
+            pienin = Range(x).Cells(r, s).Value
+        End If
+    Next r
+Next s
+
+End Function
+Function suurin(ByVal x As String) As Double
+
+
+Dim r, s As Integer
+
+r = 1
+s = 1
+suurin = Range(x).Cells(r, s).Value
+
+For s = 1 To Range(x).Columns.Count
+    For r = 1 To Range(x).Rows.Count
+        If suurin < Range(x).Cells(r, s).Value Then
+            suurin = Range(x).Cells(r, s).Value
+        End If
+    Next r
+Next s
+End Function
+
+//Sinikeltainen
+Option Explicit
+Const vyk = "vyk"
+Dim r, s As Integer
+Sub sinikeltainen()
+
+Const korkeus = "korkeus"
+Const leveys = "leveys"
+
+Dim keltainen_alkaa As Boolean
+Dim vastaus As Integer
+
+r = 1
+s = 1
+
+
+Siivoa
+
+vastaus = MsgBox("Keltainen alkaa?", vbYesNo)
+If vastaus = vbYes Then
+    keltainen_alkaa = True
+Else
+    keltainen_alkaa = False
+End If
+
+'jos käyttäjä hyväksyy että aloitetaan keltaisella
+If keltainen_alkaa Then
+For r = 1 To Range(korkeus).Value
+    For s = 1 To Range(leveys).Value
+        If (r + s) Mod 2 = 0 Then
+            Keltainen
+        Else
+            Sininen
+        End If
+    Next s
+Next r
+
+'jos käyttäjä ei hyväksy että aloitetaan keltaisella
+Else
+For r = 1 To Range(korkeus).Value
+    For s = 1 To Range(leveys).Value
+        If (r + s) Mod 2 = 0 Then
+            Sininen
+        Else
+            Keltainen
+        End If
+    Next s
+Next r
+End If
+
+End Sub
+Sub Keltainen()
+    With Range(vyk).Cells(r, s).Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .Color = 65535
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+End Sub
+Sub Sininen()
+    With Range(vyk).Cells(r, s).Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .Color = 12611584
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+End Sub
+Sub Siivoa()
+    Application.Goto Reference:="vyk"
+    Range(Selection, Selection.End(xlDown)).Select
+    Range(Selection, Selection.End(xlToRight)).Select
+    With Selection.Interior
+        .Pattern = xlNone
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+    Application.Goto Reference:="vyk"
+End Sub
+
+//sortti
+Option Explicit
+Const alue = "viher"
+Const ylin = "ylin"
+Const satumainen = "satumainen"
+
+Dim valmis As Boolean
+Dim r  As Integer
+Sub lajittele()
+'tämä sub on valmis, ei saa muuttaa!
+kopsaile
+Do
+valmis = True
+For r = 1 To Range(alue).Rows.Count - 1
+    hoida_yksi
+Next
+Loop Until valmis
+End Sub
+Sub hoida_yksi()
+
+Dim apu As Integer
+
+apu = 0
+
+If Range(alue).Cells(r, 1).Value > Range(alue).Cells((r + 1), 1).Value Then
+    apu = Range(alue).Cells(r + 1, 1).Value
+    Range(alue).Cells((r + 1), 1).Value = Range(alue).Cells(r, 1).Value
+    Range(alue).Cells(r, 1).Value = apu
+    valmis = False
+End If
+
+
+End Sub
+Sub kopsaile()
+    Application.Goto Reference:="satumainen"
+    Selection.Copy
+    Application.Goto Reference:="viher"
+    Selection.PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, _
+        SkipBlanks:=False, Transpose:=False
+    Application.CutCopyMode = False
+    Selection.Copy
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    Application.CutCopyMode = False
+    Range("A1").Select
+End Sub
