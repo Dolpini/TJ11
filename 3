@@ -1,0 +1,78 @@
+//Parempi kalenteri
+
+Sub parempi_kalenteri()
+Const vuosi = 2023
+Const vyk = "ekapaiva"
+Dim pvm As Date
+
+pvm = DateValue("2.1.2023")
+
+Dim rivi As Integer
+Dim sarake As Integer
+Dim raja As Integer
+
+
+Let rivi = 1
+Let sarake = 1
+Let raja = 2023
+'minkä vuoden loppuun kalenteri tehdään
+
+Do While Year(pvm) <= raja
+    For sarake = 1 To 7
+        If Year(pvm) > raja Then
+            Exit For
+        End If
+'jos vuosi vaihtuu kesken viikon, loppuu for-loop myös
+        Range(vyk).Cells(rivi, sarake).Value = pvm
+        If Day(pvm) = 1 Then
+            Range(vyk).Cells(rivi, sarake).Font.Color = RGB(255, 0, 0)
+        End If
+        If Day(pvm) = Day(DateSerial(Year(pvm), Month(pvm) + 1, 0)) And sarake <> 7 Then
+            rivi = rivi + 1
+        End If
+'jos pvm on kuukauden viimeinen päivä ja ei ole sunnuntai niin lisätään yksi rivi
+        pvm = pvm + 1
+    Next sarake
+    rivi = rivi + 1
+Loop
+
+End Sub
+
+//Vuosimyynnit
+Sub vuosimyynnit()
+Const kkvyk = "kkvyk"
+Const vvyk = "vvyk"
+Const kkarkki = "kk"
+Const maat = "maat"
+
+Dim rkk, skk, rv, sv As Integer 'rkk = kk-arkin rivinumero jne.
+Dim maa, q, kk As Integer
+Dim yht As Double 'summan laskemiseksi
+Dim vyht As Double 'vuoden summa
+
+rkk = 1
+skk = 1
+rv = 1
+sv = 1
+
+For maa = 1 To Range(maat).Rows.Count
+    For q = 1 To 4
+        For i = 1 To 3
+            yht = yht + Range(kkvyk).Cells(rkk, skk).Value
+            skk = skk + 1
+        Next i
+        Range(vvyk).Cells(rv, sv).Value = yht
+        sv = sv + 1
+        vyht = vyht + yht
+        'lasketaan jokaisen kvartaalin tulos yhteen
+        yht = 0
+    Next q
+    Range(vvyk).Cells(rv, sv).Value = vyht
+    vyht = 0
+    rkk = rkk + 1
+    rv = rv + 1
+    sv = 1
+    skk = 1
+Next maa
+
+End Sub
