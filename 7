@@ -1,0 +1,101 @@
+//Hae
+Option Explicit
+'ARKIT
+Const ohjaamo = "ohjaamo"
+Const myynnit = "myynnit"
+
+'SOLUT JA ALUEET yms.
+Const kansio = "kansio"
+Const piirit = "piirit"
+Const jatke = ".xlsx"
+Const eka_r_datassa = 2
+Const s_lkm = 5 'datassa sarakkeiden lkm
+
+'MUUTTUJAT
+Dim piiri As Integer
+Dim r, rdata As Long 'r koosteessa, rdata datatiedostossa
+Dim tdo, tama As String 'tiedostojen nimet
+Sub paa()
+
+Application.ScreenUpdating = False
+
+If Not tiedostot_ok() Then
+    MsgBox ("Tiedostoja ei löydetty. Tarkasta tiedostot!")
+Else
+    'MsgBox ("Tiedostot Ok")
+    hae_vuoden_tiedot
+End If
+
+Sheets(ohjaamo).Activate
+
+Application.ScreenUpdating = True
+
+End Sub
+Sub hae_vuoden_tiedot()
+
+tama = ActiveWorkbook.Name
+Sheets(myynnit).Activate
+
+For piiri = 1 To Range(piirit).Rows.Count
+
+'etsitään eka tyhjä rivi myynnit-arkilta
+r = eka_tyhja()
+'Valitaan ekan tyhjän rivin ensimmäinen solu myynnit-arkilta
+Cells(r, 1).Select
+'tdo = Application.GetOpenFilename()
+'Workbooks.Open (tdo)
+tdo = Range(piirit).Cells(piiri, 1).Value & jatke
+Workbooks.Open (Range(kansio).Value & tdo)
+'etsitään data-arkin ensimmäinen tyhjä rivi
+rdata = eka_tyhja()
+'valitaan alue, jonka vasen ylänurkka on solu A2 ja alanurkka joka on solu (E ja vika rivi)
+Range(Cells(eka_r_datassa, 1), Cells(eka_tyhja - 1, s_lkm)).Select
+'kopioidaan
+Selection.Copy
+'valitaan alkuperäinen dokumentti
+Workbooks(tama).Activate
+ActiveSheet.Paste
+'peruutetaan kopiointi
+Application.CutCopyMode = False
+'suljetaan avattu tiedosto
+Workbooks(tdo).Close
+Next
+
+End Sub
+Function tiedostot_ok() As Boolean
+
+tiedostot_ok = True
+For piiri = 1 To Range(piirit).Rows.Count
+tdo = Range(piirit).Cells(piiri, 1).Value & jatke
+If Dir(Range(kansio).Value & tdo) = "" Then
+    tiedostot_ok = False
+Else
+End If
+Next
+
+End Function
+Function eka_tyhja() As Long
+
+Dim rivi As Long
+rivi = 0
+
+Do
+rivi = rivi + 1
+Loop Until Cells(rivi, 1).Value = ""
+eka_tyhja = rivi
+
+End Function
+
+//Pivottien päivittäminen
+Sub paivita()
+
+Const p = "p"
+
+Sheets(p).Activate
+ActiveWorkbook.RefreshAll
+Cells(1, 1).Activate
+
+End Sub
+
+
+
