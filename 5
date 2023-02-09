@@ -1,0 +1,143 @@
+//Vektoreilla
+Option Explicit
+'Älä lisää tänne mitään
+Const maat = "maat"
+Const koostearkki = "kooste"
+Const tuotteet = "tuotteet"
+Const vyk_tuotteet = "vyk_tuotteet"
+Const vyk_maat = "vyk_maat"
+Const eka_r = 2 'tietojen alkukohta data-arkeilla
+Const eka_s = 2
+Const kk_sarake = 1
+Const maalkm = 3
+Const tuotelkm = 6
+
+Dim maa, tuote, kk As Integer
+Dim rdata  As Integer 'data-arkkien rivi
+Dim arkki As String
+Dim myynnit(maalkm, tuotelkm, 12)
+Sub vuositasolle()
+'tämä on valmis, älä muuta
+'tee aliohjelmat
+lue
+Sheets(koostearkki).Select
+kirjoita_tuotteittain
+kirjoita_maittain
+kirjoita_yhteensa
+End Sub
+Sub lue()
+
+For maa = 1 To maalkm
+    Sheets(Range(maat).Cells(maa, 1).Value).Select
+    For tuote = 1 To tuotelkm
+        rdata = eka_r
+        For kk = 1 To 12
+            myynnit(maa, tuote, kk) = kuukausisumma
+        Next kk
+    Next tuote
+Next maa
+'MsgBox (myynnit(3, 4, 1)) testi Msgbox
+
+End Sub
+Function kuukausisumma() As Double
+Dim yht As Double
+yht = 0
+Do
+    yht = yht + Cells(rdata, eka_s + tuote - 1).Value
+    rdata = rdata + 1
+Loop Until Month(Cells(rdata, kk_sarake).Value) <> kk Or Cells(rdata, kk_sarake).Value = ""
+
+kuukausisumma = yht
+End Function
+Sub kirjoita_tuotteittain()
+
+Dim yht As Double
+
+For tuote = 1 To tuotelkm
+    For kk = 1 To 12
+        yht = 0
+        For maa = 1 To maalkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next maa
+        Range(vyk_tuotteet).Cells(kk, tuote) = yht
+    Next kk
+Next tuote
+
+End Sub
+Sub kirjoita_maittain()
+
+Dim yht As Double
+
+For maa = 1 To maalkm
+    For kk = 1 To 12
+    yht = 0
+        For tuote = 1 To tuotelkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next tuote
+        Range(vyk_maat).Cells(kk, maa) = yht
+    Next kk
+Next maa
+
+End Sub
+Sub kirjoita_yhteensa()
+
+Dim yht As Double
+'Laskee tuotekohtaiset kuukausimyynnit yhteen
+For tuote = 1 To tuotelkm
+    yht = 0
+    For kk = 1 To 12
+        For maa = 1 To maalkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next maa
+    Next kk
+    Range(vyk_tuotteet).Cells(kk, tuote).Value = yht
+Next tuote
+
+'laskee kuukausikohtaiset tuotemyynnit yhteen
+For kk = 1 To 12
+    yht = 0
+    For tuote = 1 To tuotelkm
+        For maa = 1 To maalkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next maa
+    Next tuote
+    Range(vyk_tuotteet).Cells(kk, tuote) = yht
+Next kk
+
+'laskee maakohtaiset kuukausimyynnit yhteen
+For kk = 1 To 12
+    yht = 0
+    For maa = 1 To maalkm
+        For tuote = 1 To tuotelkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next tuote
+    Next maa
+    Range(vyk_maat).Cells(kk, maa) = yht
+Next kk
+
+'laskee kuukautiset maakohtaiset myynnit yhteen
+For maa = 1 To maalkm
+    yht = 0
+    For kk = 1 To 12
+        For tuote = 1 To tuotelkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next tuote
+    Next kk
+    Range(vyk_maat).Cells(kk, maa) = yht
+Next maa
+
+'laskee koko vuoden myynnit yhteen
+yht = 0
+For kk = 1 To 12
+    For maa = 1 To maalkm
+        For tuote = 1 To tuotelkm
+            yht = yht + myynnit(maa, tuote, kk)
+        Next tuote
+    Next maa
+Next kk
+
+Range(vyk_maat).Cells(kk, maa).Value = yht
+Range(vyk_tuotteet).Cells(kk, tuote).Value = yht
+
+
+End Sub
