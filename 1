@@ -1,0 +1,89 @@
+//Värita
+Sub Varita()
+'
+' Varita Macro
+'
+Dim i As Integer
+'i = toistojen määrä
+Dim r As Integer
+'r = valitun solu rivi
+Dim s As Integer
+'s = valitun solun sarake
+Const toistot = 15
+'kui mont kertaa toistetaan
+i = 1
+r = 1
+s = 1
+For i = 1 To toistot
+    With Cells(r, s).Interior
+        .Color = 255
+    End With
+    r = r + 1
+    s = s + 1
+    Cells(r, s).Select
+    With Selection.Interior
+        .Color = 12611584
+    End With
+    r = r + 2
+    s = s + 1
+    Next i
+End Sub
+
+//Luvut
+Sub Alueelle()
+Const alue = "keltsu"
+Const alin = 10
+Const ylin = 50
+Const sarakkeet = 12
+'kui mont saraket
+Const rivit = 10
+'kui mont rivii
+
+Dim r, s As Integer
+
+For s = 1 To sarakkeet
+    For r = 1 To rivit
+    Range(alue).Cells(r, s).Value = alin + Int(Rnd() * (ylin - alin + 1))
+    Next r
+Next s
+
+End Sub
+
+Sub Nurkasta_alkaen()
+Const alue = "vyk"
+Const alin = 10
+Const ylin = 50
+Const sarakkeet = 6
+'kui mont saraket
+Const rivit = 25
+'kui mont rivii
+Dim r, s As Integer
+
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+    Range(alue).Cells(r, s).Value = alin + Int(Rnd() * (ylin - alin + 1))
+    Next s
+Next r
+
+End Sub
+
+Sub Kuimonta()
+Const alue = "eka"
+Const alin = 10
+Const ylin = 50
+Dim rivit As Variant
+Dim sarakkeet As Variant
+Dim r, s As Integer
+
+rivit = Range("r_lkm").Value
+'lukee solun r_lkm arvon
+sarakkeet = Range("s_lkm").Value
+'lukee solun s_lkm arvon
+
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+    Range(alue).Cells(r, s).Value = alin + Int(Rnd() * (ylin - alin + 1))
+    Next s
+Next r
+
+End Sub
