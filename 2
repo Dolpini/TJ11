@@ -1,0 +1,133 @@
+//Kalenteri
+Sub kalenteri()
+Const alue = "harmaa"
+Dim pvm As Date
+pvm = DateValue("2.1.2023")
+Dim sarakkeet, rivit As Integer
+
+'Kuinka monta saraketta ja riviä on alueella
+sarakkeet = Val(Range(alue).Columns.Count)
+rivit = Val(Range(alue).Rows.Count)
+
+'Laitetaan päivät paikalleen
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+        Range(alue).Cells(r, s).Value = pvm
+        pvm = pvm + 1
+    Next s
+Next r
+
+'Laiteen kuun eka punaseks
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+        If Day(Range(alue).Cells(r, s).Value) = 1 Then
+            Range(alue).Cells(r, s).Font.Color = RGB(255, 0, 0)
+        End If
+    Next s
+Next r
+
+End Sub
+
+//Sportit
+Sub sportit()
+Const sopivuus = "sopivuus"
+Const suositukset = "suositukset"
+Const lajit = "lajit"
+Const valittu = "valittu"
+Const iat = "iat"
+Const ikamin = 0
+Const ikamax = 120
+Dim nimi, lausunto As String
+Dim ika, ikaryhma, suositus As Integer
+
+'Käyttäjän nimen kysyminen
+Do Until Not nimi = ""
+    nimi = InputBox("Nimesi?")
+Loop
+
+'Käyttäjän iän kysyminen ja rajoitteet käyttäjän vastaukselle
+Do
+    vastaus = InputBox("Ikäsi?")
+    ika = Val(vastaus)
+Loop Until vastaus >= ikamin And vastaus <= ikamax And Not vastaus = ""
+
+
+'Mihin ikäryhmään käyttäjä kuuluu
+Let ikaryhma = 1
+Do While ika > Range(iat).Cells(1, ikaryhma).Value
+    ikaryhma = ikaryhma + 1
+Loop
+
+
+'Sopivuuden numerollinen arvo taulukosta
+suositus = Range(sopivuus).Cells(Range(valittu).Value, ikaryhma).Value
+
+
+'Sopivuuden lausunto esim. todella hyvin
+lausunto = Range(suositukset).Cells(suositus, 1)
+
+
+'Mikä laji on valittu sanallisesti
+laji = Range(lajit).Cells(Range(valittu).Value, 1)
+
+'Vastaus käyttäjälle sopivuudesta
+MsgBox (nimi & "," & " " & laji & " " & "sopii sinulle" & " " & lausunto)
+
+End Sub
+
+//Tilasto
+Sub Tilastoi()
+
+'Laskenta manuaalille
+Application.Calculation = xlManual
+
+Const sininen = "sininen"
+Const tulokset = "tulokset"
+Dim sarakkeet, rivit, tulos, keskiarvo, suurin, pienin As Double
+
+'Kuinka monta saraketta ja riviä on alueella
+sarakkeet = Val(Range(sininen).Columns.Count)
+rivit = Val(Range(sininen).Rows.Count)
+
+
+'Lasketaan alueella olevien solujen summa
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+        tulos = tulos + Range(sininen).Cells(r, s).Value
+    Next s
+Next r
+
+'Lasketaan keskiarvo
+keskiarvo = tulos / (sarakkeet * rivit)
+
+'Lasketaan suurin
+suurin = Range(sininen).Cells(1, 1).Value
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+        If Range(sininen).Cells(r, s).Value > suurin Then
+            suurin = Range(sininen).Cells(r, s).Value
+        End If
+    Next s
+Next r
+
+
+'Lasketaan pienin
+pienin = Range(sininen).Cells(1, 1).Value
+For r = 1 To rivit
+    For s = 1 To sarakkeet
+        If Range(sininen).Cells(r, s).Value < pienin Then
+            pienin = Range(sininen).Cells(r, s).Value
+        End If
+    Next s
+Next r
+   
+'Laitetaan luvut oikeisiin paikkoihin
+Range(tulokset).Cells(1, 1).Value = tulos
+Range(tulokset).Cells(2, 1).Value = keskiarvo
+Range(tulokset).Cells(3, 1).Value = suurin
+Range(tulokset).Cells(4, 1).Value = pienin
+        
+'Laskenta takaisin automaatille
+Application.Calculation = xlAutomatic
+
+End Sub
