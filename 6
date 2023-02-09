@@ -1,0 +1,103 @@
+//Raportti
+
+Option Explicit
+'ARKIT
+Const myynnit = "myynnit"
+Const raportti = "raportti"
+
+'SOLUT JA ALUEET
+Const vyk_piiri = "vyk_piiri"
+Const vyk_tuote = "vyk_tuote"
+Const myyjat = "myyjat"
+Const piirit = "piirit"
+Const tuotteet = "tuotteet"
+
+'SARAKENUMEROT
+Const s_tuote = 2
+Const s_eur = 3
+Const s_myyja = 4
+Const s_piiri = 5
+Const s_vuosi = 6
+
+'MUUTTUJAT
+Dim piiri, myyja, tuote As Integer
+Dim r  As Integer
+
+Sub paa()
+Application.ScreenUpdating = False
+piireittain
+tuotteittain
+Sheets(raportti).Activate
+Application.ScreenUpdating = True
+End Sub
+Sub piireittain()
+
+Sheets(myynnit).Activate
+
+Dim summa As Double
+summa = 0
+
+For piiri = 1 To Range(piirit).Rows.Count
+    For myyja = 1 To Range(myyjat).Columns.Count
+        summa = 0
+        For r = 1 To Cells(Rows.Count, s_piiri).End(xlUp).Row
+            If Cells(r, s_piiri).Value = Range(piirit).Cells(piiri, 1).Value Then
+                If Cells(r, s_myyja).Value = Range(myyjat).Cells(1, myyja).Value Then
+                    summa = summa + Cells(r, s_eur).Value
+                Else
+                End If
+            Else
+            End If
+        Next
+        Range(vyk_piiri).Cells(piiri, myyja).Value = summa
+    Next
+Next
+
+
+End Sub
+Sub tuotteittain()
+
+Sheets(myynnit).Activate
+
+Dim summa As Double
+summa = 0
+
+For tuote = 1 To Range(tuotteet).Rows.Count
+    For myyja = 1 To Range(myyjat).Columns.Count
+        summa = 0
+        For r = 1 To Cells(Rows.Count, s_tuote).End(xlUp).Row
+            If Cells(r, s_tuote).Value = Range(tuotteet).Cells(tuote, 1).Value Then
+                If Cells(r, s_myyja).Value = Range(myyjat).Cells(1, myyja).Value Then
+                    summa = summa + Cells(r, s_eur).Value
+                Else
+                End If
+            Else
+            End If
+        Next
+        Range(vyk_tuote).Cells(tuote, myyja).Value = summa
+    Next
+Next
+
+End Sub
+
+//Laske päivät
+Sub laske_paivat()
+Const kuimonta = "kuimonta"
+Const arkki = "myynnit"
+Const nro_s = 10
+Const eka_r = 2
+Dim r, pv As Integer
+Dim viikko(7) As Integer 'viikko(1) on sunnuntaiden lkm jne.
+
+
+For pv = 1 To 7
+    For r = eka_r To Sheets(arkki).Cells(Rows.Count, nro_s).End(xlUp).Row
+       If pv = Sheets(arkki).Cells(r, nro_s).Value Then
+            viikko(pv) = viikko(pv) + 1
+        End If
+    Next
+    Range(kuimonta).Cells(pv, 1).Value = viikko(pv)
+Next
+
+
+End Sub
